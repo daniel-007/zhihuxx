@@ -285,6 +285,10 @@ func Many() {
 			fmt.Println("开始处理答案:" + temp.Data[0].Excerpt)
 			qid, aid, title, who, html := zhihu.OutputHtml(temp.Data[0])
 			fmt.Println("哦，这个问题是:" + title)
+			if util.FileExist(fmt.Sprintf("data/%d-%s.xx", qid, util.ValidFileName(title))) {
+				fmt.Printf("已经存在：%s,跳过！\n", fmt.Sprintf("data/%d-%s.xx", qid, util.ValidFileName(title)))
+				continue
+			}
 
 			if !skip {
 				tiaotiao := util.ToLower(zhihu.Input("跳过这个问题吗，默认N(Y/N)?", "N"))

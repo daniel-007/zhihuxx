@@ -25,7 +25,6 @@ func CatchCoolection(id, page int) ([]byte, error) {
 	return Baba.Get()
 }
 
-
 // 抓取收藏夹全部问题ID
 func CatchAllCollection(id int) []string {
 	returns := []string{}
@@ -44,7 +43,17 @@ func CatchAllCollection(id int) []string {
 		}
 		returns = append(returns, lists...)
 	}
-	return returns
+
+	// 去重
+	temp := map[string]string{}
+	for _, i := range returns {
+		temp[i] = i
+	}
+	temptemp := []string{}
+	for _, i := range temp {
+		temptemp = append(temptemp, i)
+	}
+	return temptemp
 }
 
 func ParseCollection(body []byte) []string {
