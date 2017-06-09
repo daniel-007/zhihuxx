@@ -129,12 +129,16 @@ func Base() {
 		}
 		if len(temp.Data) == 0 {
 			fmt.Println("没有答案！")
-			continue
+			break
 		}
 
 		fmt.Println("开始处理答案:" + temp.Data[0].Excerpt)
 		qid, aid, title, who, html := zhihu.OutputHtml(temp.Data[0])
 		fmt.Println("哦，这个问题是:" + title)
+		if util.FileExist(fmt.Sprintf("data/%d-%s.xx", qid, util.ValidFileName(title))) {
+			fmt.Printf("已经存在：%s,抓取请手动删除它！\n", fmt.Sprintf("data/%d-%s.xx", qid, util.ValidFileName(title)))
+			break
+		}
 		filename := fmt.Sprintf("data/%d/%s-%d/%s-%d的回答.html", qid, who, aid, who, aid)
 		util.MakeDirByFile(filename)
 		if zhihu.PublishToWeb {
@@ -193,14 +197,14 @@ func Base() {
 
 			temp1, err := zhihu.StructA(body)
 			if err != nil {
-				fmt.Println(err.Error())
-				continue
+				fmt.Printf("%s:%s\n", err.Error(), string(body))
+				break
 			}
 			if len(temp1.Data) == 0 {
 				fmt.Println("没有答案！")
 				s, _ := util.JsonBack(body)
 				fmt.Println(string(s))
-				continue
+				break
 			}
 
 			// 成功后再来
@@ -356,14 +360,14 @@ func Many() {
 
 				temp1, err := zhihu.StructA(body)
 				if err != nil {
-					fmt.Println(err.Error())
-					continue
+					fmt.Printf("%s:%s\n", err.Error(), string(body))
+					break
 				}
 				if len(temp1.Data) == 0 {
 					fmt.Println("没有答案！")
 					s, _ := util.JsonBack(body)
 					fmt.Println(string(s))
-					continue
+					break
 				}
 
 				// 成功后再来
