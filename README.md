@@ -120,12 +120,12 @@ y
 Linux二进制
 ```
 cd main
-go build -o zhihu_linux_x86_64 main.go 
+go build -ldflags "-s -w" -v -o zhihu_linux_x86_64 main.go
 ```
 
 Windows二进制
 ```
-GOOS=windows GOARCH=amd64 go build -x -o zhihu_windows_amd64.exe main.go 
+GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -x -o zhihu_windows_amd64.exe main.go 
 ```
 
 ## Windows编译
