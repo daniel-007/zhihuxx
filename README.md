@@ -138,7 +138,7 @@ go build -o zhihu.exe main.go
 
 ## Ubuntu安装
 
-下载源码解压.下载IDE也是解压设置环境变量.
+[云盘](https://yun.baidu.com/s/1jHKUGZG)下载源码解压.下载IDE也是解压设置环境变量.
 
 ```
 vim /etc/profile.d/myenv.sh
@@ -153,7 +153,7 @@ source /etc/profile.d/myenv.sh
 
 ## Windows安装
 
-[](https://yun.baidu.com/s/1jHKUGZG) 选择后缀为msi安装如1.6
+[云盘](https://yun.baidu.com/s/1jHKUGZG) 选择后缀为msi安装如1.6
 
 环境变量设置：
 
