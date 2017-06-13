@@ -134,6 +134,14 @@ GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -x -o zhihu_windows_amd64.ex
 go build -o zhihu.exe main.go
 ```
 
+如果你觉得项目帮助到你,欢迎请我喝杯咖啡
+
+微信
+![微信](https://raw.githubusercontent.com/hunterhug/hunterhug.github.io/master/static/jpg/wei.png)
+
+支付宝
+![支付宝](https://raw.githubusercontent.com/hunterhug/hunterhug.github.io/master/static/jpg/ali.png)
+
 # 四.环境配置
 
 ## Ubuntu安装
