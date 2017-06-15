@@ -26,12 +26,16 @@ import (
 )
 
 var (
+	// 各种链接
+	QuestionUrl   = "https://www.zhihu.com/question/%d"
+	PeopleUrl     = "https://www.zhihu.com/people/%s"
+	AnswerUrl     = "https://www.zhihu.com/question/%d/answer/%d"
+	CollectionUrl = "https://www.zhihu.com/collection/%d?page=%d"
+
 	// 一只小爬虫
 	Baba *spider.Spider
-
 	// 知乎防盗链，要加一个js
 	PublishToWeb = false
-
 	// 抓取图片？
 	CatchP = false
 	Debug  = "info"
@@ -52,6 +56,23 @@ func init() {
 	Baba.SetWaitTime(1)
 }
 
+// 设置爬虫调试日志级别，开发可用:debug,info
+func SetLogLevel(level string) {
+	spider.SetLogLevel(level)
+
+}
+
+// 设置爬虫暂停时间
+func SetWaitTime(w int) {
+	Baba.SetWaitTime(w)
+}
+
+// 输出HTML选择防盗链方式
+func SetPublishToWeb(put bool) {
+	PublishToWeb = put
+}
+
+// 登录，验证码突破不了，请采用SetCookie
 func Login(email, password string) ([]byte, error) {
 	if strings.Contains(email, "@") {
 		Baba.SetUrl("https://www.zhihu.com/login/email").SetRefer("https://www.zhihu.com/").SetUa(spider.RandomUa())
@@ -68,10 +89,21 @@ func Login(email, password string) ([]byte, error) {
 	if err != nil {
 		return []byte("网路错误..."), err
 	}
-	return util.JsonBack(body)
+	return JsonBack(body)
 }
 
-// 谨慎使用
+// 设置cookie，需传入文件位置，文件中放cookie
+func SetCookie(file string) error {
+	haha, err := util.ReadfromFile(file)
+	if err != nil {
+		return err
+	}
+	cookie := string(haha)
+	Baba.SetHeaderParm("Cookie", strings.TrimSpace(cookie))
+	return nil
+}
+
+// 谨慎使用,关注某人
 func FollowWho(who string) {
 	Baba.SetUrl(fmt.Sprintf("https://www.zhihu.com/api/v4/members/%s/followers", who))
 	Baba.Post()

@@ -1,46 +1,28 @@
-# 一.说明
+# 项目：知乎xx API
 
 已实现功能： 
 
 1. 通过单个问题id获取批量答案
 2. 通过集合id获取批量问题后获取批量答案
-3. 关注别人（风险大容易被封杀去除）
-4. 登录(验证码问题去除)
+3. 关注别人（风险大容易被封杀去除,xxxx）
+4. 登录(验证码问题去除,xxxx)
 
 待实现功能：
 
 1. 通过答案id获取单个回答
 2. 根据用户唯一域名id获取她（它）他的全部回答（有用，优先级高）
-3. 根据用户唯一域名id获取其关系图（关注与被关注：六层网络）
+3. 根据用户唯一域名id获取其关注的人，和关注她的人
 
-Golang开发的爬虫，入口在main文件夹下，你需要放一个cookie.txt在里面，其实已经写好登录代码，但是知乎突然出现了高级验证码模式，
-突破不了，因此使用笨方法。
+## 一.小白指南
 
-打开火狐浏览器后人工登录知乎，按F12 ，点击网络，刷新一下首页，然后点击第一个出现的GET /，找到消息头请求头，复制Cookie，然后粘贴到cookie.txt
+Golang开发的爬虫，小白用户请下载`main`文件夹下的`zhihu_windows_amd64.exe`，并在同一目录下新建一个`cookie.txt`文件，
+
+打开火狐浏览器后人工登录知乎，按F12，点击网络，刷新一下首页，然后点击第一个出现的`GET /`，找到消息头请求头，复制Cookie，然后粘贴到cookie.txt
 
 ![](data/cookie.png)
 
-# 二.使用指南
-
-下载
-
-```
-go get -u -v github.com/hunterhug/zhihuxx
-```
-
-下载不下来？你不会Git或者Go?请手动下载！此包在哥哥封装的爬虫包基础上开发：[土拨鼠（tubo）](https://github.com/hunterhug/GoSpider)
-
-运行
-
-```
-cd main
-go run main.go
-```
-
-已经为非程序员编译好exe文件，点击即可！
-
 点击EXE后,可选JS解决防盗链（这个是你要发布到自己的网站如：[减肥成功是什么感觉？给生活带来哪些改变？](http://www.lenggirl.com/zhihu/26613082-html/1.html)）
-我们自己本地看的话就不要选择防盗链了！回答个数已经限制不大于500个。如果没有答案证明Cookie失效，请手动修改cookie.txt。
+我们自己本地看的话就不要选择防盗链了！回答个数已经限制不大于500个。如果没有答案证明Cookie失效，请重新按照上述方法手动修改`cookie.txt`。
 
 单问题模式：
 
@@ -113,9 +95,147 @@ y
 ![](data/1.png)
 ![](data/2.png)
 
-# 三.编译成执行文件
+## 二.API说明
 
-## Linux下跨平台编译
+下载
+
+```
+go get -u -v github.com/hunterhug/zhihuxx
+```
+
+此包在哥哥封装的爬虫包基础上开发：[土拨鼠（tubo）](https://github.com/hunterhug/GoSpider)，请进入`main`文件夹运行成品程序，`IDE`开发模式下，运行路径是不一样的，请在`IDE`项目根目录放`cookie.txt`文件
+
+二次开发时你只需`import`本包。
+
+```
+import zhihu "github.com/hunterhug/zhihuxx"
+```
+
+API如下：
+
+```
+// 设置cookie，需传入文件位置，文件中放cookie
+func SetCookie(file string) error 
+
+// 构造问题链接，返回url
+func Question(id string) string
+
+// 抓答案，需传入页数，返回一堆数据
+func CatchAnswer(url string, page int) ([]byte, error)
+
+// 结构化回答，返回一个结构体
+func StructAnswer(body []byte) (*Answer, error)
+
+// 抓取收藏夹第几页列表
+func CatchCoolection(id, page int) ([]byte, error)
+
+// 抓取全部收藏夹页数,并返回问题ID和标题
+func CatchAllCollection(id int) map[string]string 
+
+// 解析收藏夹，返回问题ID和标题
+func ParseCollection(body []byte) map[string]string
+
+// 输出HTML选择防盗链方式
+func SetPublishToWeb(put bool)
+
+// 输出友好格式HTML，返回问题ID,回答ID，标题，作者，还有HTML
+func OutputHtml(answer DataInfo) (qid, aid int, title, who, html string)
+
+// 抓取图片前需要设置true
+func SetSavePicture(catch bool) 
+
+// 抓取html中的图片，保存图片在dir下
+func SavePicture(dir string, body []byte) 
+
+// 遇到返回的JSON中有中文乱码，请转意
+func JsonBack(body []byte) ([]byte, error)
+
+// 设置爬虫调试日志级别，开发可用:debug,info
+func SetLogLevel(level string) 
+
+// 设置爬虫暂停时间
+func SetWaitTime(w int)
+```
+
+还差某些API，需逐步优化。
+
+使用时需要先`SetCookie()`，再根据具体进行开发，使用如下：
+
+```
+package main
+
+import (
+	"fmt"
+	zhihu "github.com/hunterhug/zhihuxx"
+	"strings"
+)
+
+// API使用说明
+func main() {
+	//  1. 设置爬虫暂停时间，可选
+	zhihu.SetWaitTime(1)
+
+	// 2. 调试模式设置为debug，可选
+	zhihu.SetLogLevel("info")
+
+	// 3. 需先传入cookie，必须
+	e := zhihu.SetCookie("./cookie.txt")
+	if e != nil {
+		panic(e.Error())
+	}
+
+	// 4.构建问题，url差页数
+	q := zhihu.Question("28467579")
+	fmt.Println(q)
+
+	// 5.抓取问题回答，按页数，传入页数是为了补齐url，策略是循环抓，直到抓不到可认为页数已完
+	page := 1
+	body, e := zhihu.CatchAnswer(q, page)
+	if e != nil {
+		fmt.Println(e.Error())
+		return
+	}
+	if strings.Contains(string(body), "error") { //可能cookie失效
+		b, _ := zhihu.JsonBack(body)
+		fmt.Println(string(b))
+	}
+
+	// 6.结构化回答
+	answers, e := zhihu.StructAnswer(body)
+	if e != nil {
+		fmt.Println(e.Error())
+	} else {
+		// 就不打出来了
+		//fmt.Printf("%#v\n", answers.Page)
+		//fmt.Printf("%#v\n", answers.Data)
+	}
+
+	// 7. 选择OutputHtml不要防盗链，因为回答输出的html经过了处理，所以我们进行过滤出好东西
+	zhihu.SetPublishToWeb(false)
+	qid,aid,t,who,html:=zhihu.OutputHtml(answers.Data[0])
+	fmt.Println(qid)
+	fmt.Println(aid)
+	fmt.Println(t)
+	fmt.Println(who)
+
+	// 8. 抓图片
+	zhihu.SetSavePicture(false)
+	zhihu.SavePicture("test", []byte(html))
+
+	// 9. 抓集合，第2页
+	b, e := zhihu.CatchCoolection(78172986, 2)
+	if e != nil {
+		fmt.Println(e.Error())
+	} else {
+		// 解析集合
+		fmt.Printf("%#v",zhihu.ParseCollection(b))
+	}
+}
+```
+
+## 三.编译执行文件方式
+
+### Linux下跨平台编译
 
 Linux二进制
 ```
@@ -128,7 +248,7 @@ Windows二进制
 GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -x -o zhihu_windows_amd64.exe main.go 
 ```
 
-## Windows编译
+### Windows编译
 
 ```
 go build -o zhihu.exe main.go
@@ -142,9 +262,9 @@ go build -o zhihu.exe main.go
 支付宝
 ![支付宝](https://raw.githubusercontent.com/hunterhug/hunterhug.github.io/master/static/jpg/ali.png)
 
-# 四.环境配置
+## 四.环境配置
 
-## Ubuntu安装
+### Ubuntu安装
 
 [云盘](https://yun.baidu.com/s/1jHKUGZG)下载源码解压.下载IDE也是解压设置环境变量.
 
@@ -159,7 +279,7 @@ export PATH=.:$PATH:/app/go/bin:$GOPATH/bin:/home/jinhan/software/Gogland-171.37
 source /etc/profile.d/myenv.sh
 ```
 
-## Windows安装
+### Windows安装
 
 [云盘](https://yun.baidu.com/s/1jHKUGZG) 选择后缀为msi安装如1.6
 
@@ -172,7 +292,7 @@ GOPATH G:\smartdogo
 GOROOT C:\Go\
 ```
 
-## docker安装
+### docker安装
 
 我们的库可能要使用各种各样的工具，配置连我这种专业人员有时都搞不定，而且还可能会损坏，所以用docker方式随时随地开发。
 

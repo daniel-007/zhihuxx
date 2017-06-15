@@ -25,9 +25,9 @@ func CatchCoolection(id, page int) ([]byte, error) {
 	return Baba.Get()
 }
 
-// 抓取收藏夹全部问题ID
-func CatchAllCollection(id int) []string {
-	returns := []string{}
+// 抓取全部收藏夹页数,并返回问题ID和标题
+func CatchAllCollection(id int) map[string]string {
+	returns := map[string]string{}
 	i := 1
 	for {
 		body, err := CatchCoolection(id, i)
@@ -37,33 +37,27 @@ func CatchAllCollection(id int) []string {
 		}
 		fmt.Printf("抓取收藏夹第%d页\n", i)
 		i = i + 1
-		lists := ParseCollection(body)
-		if len(lists) == 0 {
+		maps := ParseCollection(body)
+		if len(maps) == 0 {
 			break
 		}
-		returns = append(returns, lists...)
+		for id, q := range maps {
+			returns[id] = q
+		}
 	}
-
-	// 去重
-	temp := map[string]string{}
-	for _, i := range returns {
-		temp[i] = i
-	}
-	temptemp := []string{}
-	for _, i := range temp {
-		temptemp = append(temptemp, i)
-	}
-	return temptemp
+	return returns
 }
 
-func ParseCollection(body []byte) []string {
-	returns := []string{}
+// 解析收藏夹，返回问题ID和标题
+func ParseCollection(body []byte) map[string]string {
+	returns := map[string]string{}
 	doc, _ := query.QueryBytes(body)
 	//zm-item-title
 	doc.Find(".zm-item-title").Each(func(num int, node *goquery.Selection) {
-		q, ok := node.Find("a").Attr("href")
+		qa := node.Find("a")
+		q, ok := qa.Attr("href")
 		if ok {
-			returns = append(returns, strings.Replace(q, "/question/", "", -1))
+			returns[strings.Replace(q, "/question/", "", -1)] = qa.Text()
 		}
 	})
 	return returns

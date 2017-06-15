@@ -20,10 +20,10 @@ import (
 	"testing"
 )
 
-func TestCatchA(t *testing.T) {
+func TestCatchAnswer(t *testing.T) {
 	cookie := `q_c1=ab5eab2e40524b4e90aae70065efb5ba|1496835483000|1496835483000; r_cap_id="OTIxNzY0OTkzZjgyNDM0ZGJkZGNiZGYwN2I1MDUwN2M=|1496835486|0f4561035485d66a94a39ad505b3e944eed2ad16"; cap_id="ZDc3NmU5NTUxOWY3NDZlZmI3YjAwNGY0MjNhOGU5ODM=|1496835486|72e747a6ae31b38aae7c74f36d1f6829168bf5b6"; d_c0="AEBCmeip4AuPTuPzZwZLKjXPTWAq5lT-sXs=|1496835487"; _zap=b9ac213e-63aa-4020-8250-0e050afb3f56; _xsrf=2fc4811def8cd9f358465e4ea418b23b; __utma=51854390.576976127.1496835487.1496835487.1496973515.2; __utmb=51854390.0.10.1496973515; __utmc=51854390; __utmz=51854390.1496973515.2.2.utmcsr=zhihu.com|utmccn=(referral)|utmcmd=referral|utmcct=/; __utmv=51854390.100-1|2=registration_date=20150209=1^3=entry_date=20150209=1; z_c0=Mi4wQUJEQk9vSjVtd2NBUUVLWjZLbmdDeGNBQUFCaEFsVk51SEpmV1FBZmpxSS1KMHMxV3BOUWZuRWtiMHpKT2dnNURR|1496973514|4e40191547ed419cebdda17a7d14d2c74dbc987e`
 	Baba.SetHeaderParm("Cookie", strings.TrimSpace(cookie))
-	b, e := CatchA(Q("28467579"), 1)
+	b, e := CatchAnswer(Question("28467579"), 1)
 	if e != nil {
 		fmt.Println(e.Error())
 	} else {
@@ -31,12 +31,12 @@ func TestCatchA(t *testing.T) {
 	}
 }
 
-func TestStructQ(t *testing.T) {
+func TestStructAnswer(t *testing.T) {
 	body, err := util.ReadfromFile(filepath.Join(util.CurDir(), "data/question.json"))
 	if err != nil {
 		panic(err.Error())
 	}
-	temp, err := StructA(body)
+	temp, err := StructAnswer(body)
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
@@ -54,7 +54,7 @@ func TestOutputHtml(t *testing.T) {
 	if err != nil {
 		panic(err.Error())
 	}
-	temp, err := StructA(body)
+	temp, err := StructAnswer(body)
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {

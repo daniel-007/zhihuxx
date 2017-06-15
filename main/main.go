@@ -57,15 +57,12 @@ func help() {
 func main() {
 	help()
 
-	haha, err := util.ReadfromFile("cookie.txt")
+	err := zhihu.SetCookie("cookie.txt")
 	if err != nil {
 		fmt.Println("请您一定要保证cookie.txt存在哦：" + err.Error())
 		time.Sleep(50 * time.Second)
 		os.Exit(0)
 	}
-	cookie := string(haha)
-	zhihu.Baba.SetHeaderParm("Cookie", strings.TrimSpace(cookie))
-
 	js := strings.ToLower(zhihu.Input("萌萌：你要发布到自己的网站上吗(JS解决防盗链)Y/N(默认N)", "n"))
 	if strings.Contains(js, "y") {
 		zhihu.PublishToWeb = true
@@ -74,7 +71,7 @@ func main() {
 	}
 	tu := strings.ToLower(zhihu.Input("萌萌：要抓取图片吗Y/N(默认N)", "n"))
 	if strings.Contains(tu, "y") {
-		zhihu.CatchP = true
+		zhihu.SetSavePicture(true)
 	}
 	choice := zhihu.Input("萌萌：从收藏夹获取按1，从问题获取按2(默认)", "2")
 	for {
@@ -109,21 +106,21 @@ func Base() {
 		page := 1
 		//28467579
 		id := zhihu.Input("萌萌：请输入问题ID:", "")
-		q := zhihu.Q(id)
+		q := zhihu.Question(id)
 		//fmt.Println(q)
 
 		// 第一个答案
-		body, err := zhihu.CatchA(q, page)
+		body, err := zhihu.CatchAnswer(q, page)
 		fmt.Println("预抓取第一个回答！")
 		if err != nil {
 			fmt.Println("a" + err.Error())
 			continue
 		}
 
-		temp, err := zhihu.StructA(body)
+		temp, err := zhihu.StructAnswer(body)
 		if err != nil {
 			fmt.Println("b" + err.Error())
-			s, _ := util.JsonBack(body)
+			s, _ := zhihu.JsonBack(body)
 			fmt.Println(string(s))
 			continue
 		}
@@ -186,7 +183,7 @@ func Base() {
 				fmt.Println("萌萌：答案超出个数了哦，哦耶~")
 				break
 			}
-			body, err = zhihu.CatchA(q, page+1)
+			body, err = zhihu.CatchAnswer(q, page+1)
 			if err != nil {
 				fmt.Println("抓取答案失败：" + err.Error())
 				continue
@@ -195,14 +192,14 @@ func Base() {
 			}
 			//util.SaveToFile("data/question.json", body)
 
-			temp1, err := zhihu.StructA(body)
+			temp1, err := zhihu.StructAnswer(body)
 			if err != nil {
 				fmt.Printf("%s:%s\n", err.Error(), string(body))
 				break
 			}
 			if len(temp1.Data) == 0 {
 				fmt.Println("没有答案！")
-				s, _ := util.JsonBack(body)
+				s, _ := zhihu.JsonBack(body)
 				fmt.Println(string(s))
 				break
 			}
@@ -261,23 +258,26 @@ func Many() {
 			continue
 		}
 		fmt.Printf("总计有%d个问题:\n", len(qids))
-		for _, id := range qids {
+		for id, qa := range qids {
+			fmt.Printf("ID:%s，Answer:%s\n", id, qa)
+		}
+		for id, _ := range qids {
 			page := 1
-			q := zhihu.Q(id)
+			q := zhihu.Question(id)
 			//fmt.Println(q)
 
 			// 第一个答案
-			body, err := zhihu.CatchA(q, page)
+			body, err := zhihu.CatchAnswer(q, page)
 			fmt.Println("预抓取第一个回答！")
 			if err != nil {
 				fmt.Println("a" + err.Error())
 				continue
 			}
 
-			temp, err := zhihu.StructA(body)
+			temp, err := zhihu.StructAnswer(body)
 			if err != nil {
 				fmt.Println("b" + err.Error())
-				s, _ := util.JsonBack(body)
+				s, _ := zhihu.JsonBack(body)
 				fmt.Println(string(s))
 				continue
 			}
@@ -349,7 +349,7 @@ func Many() {
 					fmt.Println("萌萌：答案超出个数了哦，哦耶~")
 					break
 				}
-				body, err = zhihu.CatchA(q, page+1)
+				body, err = zhihu.CatchAnswer(q, page+1)
 				if err != nil {
 					fmt.Println("抓取答案失败：" + err.Error())
 					continue
@@ -358,14 +358,14 @@ func Many() {
 				}
 				//util.SaveToFile("data/question.json", body)
 
-				temp1, err := zhihu.StructA(body)
+				temp1, err := zhihu.StructAnswer(body)
 				if err != nil {
 					fmt.Printf("%s:%s\n", err.Error(), string(body))
 					break
 				}
 				if len(temp1.Data) == 0 {
 					fmt.Println("没有答案！")
-					s, _ := util.JsonBack(body)
+					s, _ := zhihu.JsonBack(body)
 					fmt.Println(string(s))
 					break
 				}
