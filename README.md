@@ -250,6 +250,10 @@ captcha_type:cn
 email:wefwefwefwef@qq.com
 ```
 
+待收集`https://www.zhihu.com/captcha.gif?r=1497501049814&type=login&lang=cn`进行机器学习！
+
+![](data/captcha.gif)
+
 ## 三.编译执行文件方式
 
 ### Linux下跨平台编译
