@@ -233,6 +233,23 @@ func main() {
 }
 ```
 
+登录待破解验证码：
+
+```go
+// 登录，验证码突破不了，请采用SetCookie
+func Login(email, password string) ([]byte, error)
+```
+
+![](data/ca.png)
+
+```
+_xsrf:2fc4811def8cd9f358465e4ea418b23b
+password:z13112502886
+captcha:{"img_size":[200,44],"input_points":[[19.2969,28],[40.2969,28],[68.2969,27],[89.2969,31],[112.297,34],[138.297,15],[161.297,27]]}
+captcha_type:cn
+email:wefwefwefwef@qq.com
+```
+
 ## 三.编译执行文件方式
 
 ### Linux下跨平台编译
