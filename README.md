@@ -26,7 +26,7 @@ Golang开发的爬虫，小白用户请下载`main`文件夹下的`zhihu_windows
 
 单问题模式：
 
-```
+```bash
 zhihu_linux_x86_64 
 
         -----------------
@@ -75,7 +75,7 @@ y
 
 上帝模式
 
-```
+```bash
 萌萌：从收藏夹获取按1，从问题获取按2(默认)
 1
 萌萌说亲爱的，因为回答实在太多，请限制获取的回答个数:30（默认)
@@ -99,7 +99,7 @@ y
 
 下载
 
-```
+```bash
 go get -u -v github.com/hunterhug/zhihuxx
 ```
 
@@ -107,13 +107,13 @@ go get -u -v github.com/hunterhug/zhihuxx
 
 二次开发时你只需`import`本包。
 
-```
+```go
 import zhihu "github.com/hunterhug/zhihuxx"
 ```
 
 API如下：
 
-```
+```go
 // 设置cookie，需传入文件位置，文件中放cookie
 func SetCookie(file string) error 
 
@@ -161,7 +161,7 @@ func SetWaitTime(w int)
 
 使用时需要先`SetCookie()`，再根据具体进行开发，使用如下：
 
-```
+```go
 package main
 
 import (
@@ -238,19 +238,21 @@ func main() {
 ### Linux下跨平台编译
 
 Linux二进制
-```
+
+```bash
 cd main
 go build -ldflags "-s -w" -v -o zhihu_linux_x86_64 main.go
 ```
 
 Windows二进制
-```
+
+```bash
 GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -x -o zhihu_windows_amd64.exe main.go 
 ```
 
 ### Windows编译
 
-```
+```bash
 go build -o zhihu.exe main.go
 ```
 
@@ -268,7 +270,7 @@ go build -o zhihu.exe main.go
 
 [云盘](https://yun.baidu.com/s/1jHKUGZG)下载源码解压.下载IDE也是解压设置环境变量.
 
-```
+```bash
 vim /etc/profile.d/myenv.sh
 
 export GOROOT=/app/go
@@ -285,7 +287,7 @@ source /etc/profile.d/myenv.sh
 
 环境变量设置：
 
-```
+```bash
 Path G:\smartdogo\bin
 GOBIN G:\smartdogo\bin
 GOPATH G:\smartdogo
@@ -298,13 +300,13 @@ GOROOT C:\Go\
 
 先拉镜像
 
-```
+```bash
 docker pull golang:1.8
 ```
 
 Golang环境启动：
 
-```
+```bash
 docker run --rm --net=host -it -v /home/jinhan/code:/go --name mygolang golang:1.8 /bin/bash
 
 root@27214c6216f5:/go# go env
