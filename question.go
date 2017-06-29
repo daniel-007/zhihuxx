@@ -14,6 +14,7 @@ package zhihuxx
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/hunterhug/GoSpider/query"
@@ -24,7 +25,7 @@ import (
 var (
 	// 问题链接
 	Qurl      = "https://www.zhihu.com/api/v4/questions/%s/answers?"
-	Qurlquery = "sort_by=default&include=data[*].%s&limit=1&offset=" //不要太暴力，每次一个答案就可以
+	Qurlquery = "sort_by=default&include=data[*].%s"
 	// 各种参数，问题获取到的JSON字段意思
 	Qurlparm = []string{
 		"is_normal",           // 是否正常
@@ -85,22 +86,37 @@ type QuestionInfo struct {
 	Qid        int    `json:"id"`
 }
 
-// 构造问题链接，返回url
+var tempParm = fmt.Sprintf(Qurlquery, strings.Join(Qurlparm, ","))
+
+// 构造问题链接，返回url,你可以通过Qurlparm拼出另外一个url
 func Question(id string) string {
-	return fmt.Sprintf(Qurl, id) + fmt.Sprintf(Qurlquery, strings.Join(Qurlparm, ","))
+	return fmt.Sprintf(Qurl, id) + tempParm + "&limit=%d&offset=%d"
 }
 
-// 抓答案，需传入页数，返回一堆数据
-func CatchAnswer(url string, page int) ([]byte, error) {
+// 抓答案，需传入限制和页数,每次最多抓20个答案
+func CatchAnswer(url string, limit, page int) ([]byte, error) {
 	if page < 1 {
 		page = 1
 	}
-	Baba.SetUrl(url + util.IS((page-1)*1))
+	if limit < 1 {
+		limit = 1
+	}
+	if limit > 20 {
+		limit = 20
+	}
+	uurl := fmt.Sprintf(url, limit, (page-1)*limit)
+
+	//fmt.Println(uurl)
+	Baba.SetUrl(uurl)
+
 	body, err := Baba.Get()
 	if err != nil {
 
 	} else {
-		//body, err = zhihu.JsonBack(body)
+		if strings.Contains(string(body), "AuthenticationInvalid") {
+			data, _ := JsonBack(body)
+			return data, errors.New("AuthenticationInvalid cookie fail")
+		}
 	}
 	return body, err
 }

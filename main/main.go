@@ -21,10 +21,11 @@ import (
 	"time"
 )
 
-var Limit = 30 //限制回答个数
+var Limit = 520 //限制回答个数
 var Follow = false
 
 // 抓取一个问题的全部信息
+// 每次只抓取一个答案
 
 func help() {
 	fmt.Println(`
@@ -47,8 +48,11 @@ func help() {
 	如果什么都没抓到请往exe同级目录cookie.txt
 	增加cookie，手动增加cookie见说明
 
-	你亲爱的萌萌~
+	你亲爱的萌萌~ 努力工作中...
 	太阳萌飞了~~~
+
+	联系: Github:hunterhug
+	2017.6.29 写于大深圳
 	-----------------
 	`)
 }
@@ -56,7 +60,7 @@ func help() {
 // 应该替换为本地照片！待做
 func main() {
 	help()
-
+	//err := zhihu.SetCookie("/home/jinhan/cookie.txt")
 	err := zhihu.SetCookie("cookie.txt")
 	if err != nil {
 		fmt.Println("请您一定要保证cookie.txt存在哦：" + err.Error())
@@ -110,7 +114,7 @@ func Base() {
 		//fmt.Println(q)
 
 		// 第一个答案
-		body, err := zhihu.CatchAnswer(q, page)
+		body, err := zhihu.CatchAnswer(q, 1, page)
 		fmt.Println("预抓取第一个回答！")
 		if err != nil {
 			fmt.Println("a" + err.Error())
@@ -183,7 +187,7 @@ func Base() {
 				fmt.Println("萌萌：答案超出个数了哦，哦耶~")
 				break
 			}
-			body, err = zhihu.CatchAnswer(q, page+1)
+			body, err = zhihu.CatchAnswer(q, 1, page+1)
 			if err != nil {
 				fmt.Println("抓取答案失败：" + err.Error())
 				continue
@@ -267,7 +271,7 @@ func Many() {
 			//fmt.Println(q)
 
 			// 第一个答案
-			body, err := zhihu.CatchAnswer(q, page)
+			body, err := zhihu.CatchAnswer(q, 1, page)
 			fmt.Println("预抓取第一个回答！")
 			if err != nil {
 				fmt.Println("a" + err.Error())
@@ -349,7 +353,7 @@ func Many() {
 					fmt.Println("萌萌：答案超出个数了哦，哦耶~")
 					break
 				}
-				body, err = zhihu.CatchAnswer(q, page+1)
+				body, err = zhihu.CatchAnswer(q, 1, page+1)
 				if err != nil {
 					fmt.Println("抓取答案失败：" + err.Error())
 					continue

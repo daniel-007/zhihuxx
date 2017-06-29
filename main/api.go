@@ -38,7 +38,8 @@ func main() {
 
 	// 5.抓取问题回答，按页数，传入页数是为了补齐url，策略是循环抓，直到抓不到可认为页数已完
 	page := 1
-	body, e := zhihu.CatchAnswer(q, page)
+	limit := 20
+	body, e := zhihu.CatchAnswer(q, limit, page)
 	if e != nil {
 		fmt.Println(e.Error())
 		return
@@ -60,7 +61,7 @@ func main() {
 
 	// 7. 选择OutputHtml不要防盗链，因为回答输出的html经过了处理，所以我们进行过滤出好东西
 	zhihu.SetPublishToWeb(false)
-	qid,aid,t,who,html:=zhihu.OutputHtml(answers.Data[0])
+	qid, aid, t, who, html := zhihu.OutputHtml(answers.Data[0])
 	fmt.Println(qid)
 	fmt.Println(aid)
 	fmt.Println(t)
@@ -76,6 +77,6 @@ func main() {
 		fmt.Println(e.Error())
 	} else {
 		// 解析集合
-		fmt.Printf("%#v",zhihu.ParseCollection(b))
+		fmt.Printf("%#v", zhihu.ParseCollection(b))
 	}
 }

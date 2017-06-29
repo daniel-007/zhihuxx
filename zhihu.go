@@ -104,9 +104,9 @@ func SetCookie(file string) error {
 }
 
 // 谨慎使用,关注某人
-func FollowWho(who string) {
+func FollowWho(who string) ([]byte, error) {
 	Baba.SetUrl(fmt.Sprintf("https://www.zhihu.com/api/v4/members/%s/followers", who))
-	Baba.Post()
+	return Baba.Post()
 }
 
 func Follow(who string) {

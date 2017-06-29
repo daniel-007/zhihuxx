@@ -95,6 +95,32 @@ y
 ![](data/1.png)
 ![](data/2.png)
 
+目录结构及获取的数据如下:
+
+```
+
+--- zhihu_windows_amd64.exe 生成的数据在data文件夹
+--- zhihu_linux_x86_64
+--- cookie.txt
+--- data
+     --- 27761934-如何让自拍的照片看上去像是别人拍的？.xx   *去重标志
+     --- 27761934  * 回答文件集
+        ---zhi-zhi-zhi-41-89-167963702 * 一个用户的回答 包括图片
+           --- zhi-zhi-zhi-41-89-167963702的回答.html
+           --- https###pic1.zhimg.com#v2-22407b227c9a7a19aa0057f38bf6e754_r.png
+               https###pic1.zhimg.com#v2-7782ff69838c379173415458b97b5008_xll.jpg
+               https###pic1.zhimg.com#v2-c41bf767819fbc61b3ff7bb4c2900884_r.jpg
+
+        ---zhi-zhi-wei-zhi-zhi-36-38-164986419
+        ---zhi-zhi-wei-zhi-zhi-hu-hu-wei-hu-hu-164880780
+
+     --- 27761934-html  生成的html集,可以点击查看
+        --- 1.html 
+        --- 2.html
+```
+
+如果要重新获取答案,请将`.xx`文件去掉
+
 ## 二.API说明
 
 下载
@@ -120,8 +146,8 @@ func SetCookie(file string) error
 // 构造问题链接，返回url
 func Question(id string) string
 
-// 抓答案，需传入页数，返回一堆数据
-func CatchAnswer(url string, page int) ([]byte, error)
+// 抓答案，需传入限制和页数,每次最多抓20个答案
+func CatchAnswer(url string, limit, page int) ([]byte, error)
 
 // 结构化回答，返回一个结构体
 func StructAnswer(body []byte) (*Answer, error)
@@ -157,6 +183,13 @@ func SetLogLevel(level string)
 func SetWaitTime(w int)
 ```
 
+谨慎使用
+
+```
+// 关注某人
+func FollowWho(who string) ([]byte, error) {
+```
+
 还差某些API，需逐步优化。
 
 使用时需要先`SetCookie()`，再根据具体进行开发，使用如下：
@@ -190,7 +223,8 @@ func main() {
 
 	// 5.抓取问题回答，按页数，传入页数是为了补齐url，策略是循环抓，直到抓不到可认为页数已完
 	page := 1
-	body, e := zhihu.CatchAnswer(q, page)
+	limit := 20
+	body, e := zhihu.CatchAnswer(q, limit, page)
 	if e != nil {
 		fmt.Println(e.Error())
 		return
@@ -256,22 +290,31 @@ email:wefwefwefwef@qq.com
 
 ## 三.编译执行文件方式
 
-### Linux下跨平台编译
+### Linux操作系统下跨平台交叉编译
 
 Linux二进制
 
 ```bash
 cd main
-go build -ldflags "-s -w" -v -o zhihu_linux_x86_64 main.go
+
+# 64位
+GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -x -o zhihu_linux_amd64 main.go
+
+# 32位
+GOOS=linux GOARCH=386 go build -ldflags "-s -w" -x -o zhihu_linux_386 main.go
 ```
 
 Windows二进制
 
 ```bash
-GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -x -o zhihu_windows_amd64.exe main.go 
+# 64位
+GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -x -o zhihu_windows_amd64.exe main.go
+
+# 32位
+GOOS=windows GOARCH=386 go build -ldflags "-s -w" -x -o zhihu_windows_386.exe main.go
 ```
 
-### Windows编译
+### Windows操作系统下编译
 
 ```bash
 go build -o zhihu.exe main.go
